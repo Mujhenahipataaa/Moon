@@ -1,0 +1,746 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Moon ✨</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+    <link rel="shortcut icon" href="Media/favicon.ico" type="image/x-icon" />
+
+    <script
+      src="https://kit.fontawesome.com/542131e2b7.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+      body {
+        font-family: "Montserrat", sans-serif;
+        background-color: #10121b;
+      }
+      .starry {
+        position: relative;
+        overflow: hidden; /* so canvas doesn’t spill out */
+      }
+
+      .starry canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1; /* behind text */
+      }
+
+      #countdown p {
+        text-shadow: 0 0 27px rgba(255, 255, 255, 0.229);
+      }
+    </style>
+
+    <style>
+      @keyframes shimmer {
+        0% {
+          background-position: -200% 0;
+        }
+        100% {
+          background-position: 200% 0;
+        }
+      }
+
+      .glass-animated {
+        position: relative;
+        background: linear-gradient(
+          130deg,
+          rgba(255, 255, 255, 0.05) 0%,
+          rgba(255, 255, 255, 0.1) 25%,
+          rgba(255, 255, 255, 0.2) 50%,
+          rgba(255, 255, 255, 0.1) 75%,
+          rgba(255, 255, 255, 0.05) 100%
+        );
+        background-size: 400% 100%;
+        animation: shimmer 10s ease-in-out infinite;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 10px;
+        transition:
+          transform 0.3s ease,
+          box-shadow 0.3s ease,
+          filter 0.3s ease;
+      }
+
+      .glass-animated:hover {
+        transform: scale(1.02);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+      }
+
+      .fade-element {
+        opacity: 1;
+        transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+    </style>
+  </head>
+  <body class="text-white">
+    <div
+      id="lockOverlay"
+      class="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm px-6"
+    >
+      <div
+        class="bg-[#10121b]/80 backdrop-blur-lg p-10 rounded-3xl flex flex-col items-center w-80 sm:w-96 shadow-[0_20px_50px_rgba(0,0,0,0.6)] border border-white/10"
+      >
+        <h4
+          class="text-3xl sm:text-4xl font-extrabold text-white mb-8 tracking-wider"
+        ></h4>
+
+        <p class="text-3xl text-center mb-8">Enter Password</p>
+
+        <input
+          type="password"
+          id="passwordInput"
+          placeholder="••••••••"
+          class="w-full h-14 px-6 text-white bg-white/5 border border-white/20 rounded-2xl focus:outline-none focus:ring-2 focus:ring-white/25 focus:border-white/30 placeholder:text-white/40 placeholder:tracking-wider transition duration-300 text-lg"
+        />
+
+        <button
+          id="unlockBtn"
+          class="w-full py-4 rounded-[1.5rem] border border-white/15 text-white font-semibold backdrop-blur-md hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/30 button_background tracking-wide text-lg mt-6"
+        >
+          Unlock
+        </button>
+
+        <p id="errorMsg" class="text-red-400 mt-4 text-center text-sm hidden">
+          Incorrect password. Please try again.
+        </p>
+      </div>
+    </div>
+
+    <div id="loading-circle" class="loading-circle">
+      <div class="elegant-spinner"></div>
+    </div>
+
+    <div class="container_universal_hidden">
+      <div class="god_nav">
+        <nav>
+          <div class="wrapper">
+            <div class="options">
+              <div class="logo">
+                <a href="#">For You! 🌷</a>
+              </div>
+              <div id="openMobileMenu" class="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+              </div>
+            </div>
+
+            <ul class="nav-links">
+              <p class="text-5xl">Veera</p>
+            </ul>
+          </div>
+        </nav>
+      </div>
+
+      <div id="mobileMenu" class="mobile-nav">
+        <div class="mobile-nav-header">
+          <button id="closeMobileMenu" class="close-btn">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <ul class="nav-links">
+          <p class="text-5xl">
+            You may stay here as long as you wish! Everything here is made just
+            for you! ✨
+          </p>
+        </ul>
+      </div>
+
+      <section
+        class="flex-grow flex flex-col justify-center items-center text-center px-6 header"
+      >
+        <h2
+          class="text-6xl md:text-8xl font-bold mb-2 leading-none fade-element"
+        >
+          Hey, Veera!
+        </h2>
+        <p class="text-zinc-400 text-base md:text-lg fade-element">
+          Well, Words fall short. So instead of explaining, let me just show
+          you. 🦋
+        </p>
+      </section>
+
+      <section
+        id="about"
+        class="starry px-6 pt-[8rem] py-24 mx-auto text-center"
+      >
+        <canvas></canvas>
+        <h3
+          class="text-6xl sm:text-6xl md:text-7xl lg:text-7xl font-bold mb-2 sm:mb-4"
+        >
+          Your Territory!
+        </h3>
+
+        <p class="dim_text mb-8 text-base">
+          This place is written for you! The Stars ✨
+        </p>
+        <div
+          class="text-zinc-400 text-base md:text-lg leading-relaxed md:leading-loose space-y-6"
+        ></div>
+      </section>
+
+      <section
+        id="language"
+        class="starry pt-[8rem] mx-auto text-center relative"
+      >
+        <canvas></canvas>
+
+        <h3
+          class="text-6xl sm:text-6xl md:text-7xl lg:text-7xl font-bold mb-2 sm:mb-4"
+        >
+          Mystery 👐🏻
+        </h3>
+
+        <p class="dim_text mb-8 text-base">For your creative ideas ✨</p>
+
+        <div class="max-w-[60rem] mx-auto px-4 py-8">
+          <div
+            class="rounded-[2rem] bg-white/5 backdrop-blur-2xl border border-white/10 p-8 sm:p-12 transition-all duration-500"
+          >
+            <div class="flex flex-col md:flex-row gap-10 max-w-5xl mx-auto">
+              <!-- Input Box -->
+              <div class="flex-1 flex flex-col">
+                <label class="mb-4 font-semibold text-left text-lg"
+                  >Type here:</label
+                >
+                <textarea
+                  id="inputText"
+                  class="peer w-full h-32 md:h-72 pt-6 pb-6 pr-8 pl-8 text-white bg-transparent border border-white/10 rounded-[1.6rem] focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/20 transition duration-300 placeholder:italic resize-none"
+                  placeholder="Write something..."
+                ></textarea>
+              </div>
+
+              <!-- Output Box -->
+              <div class="flex-1 flex flex-col">
+                <label class="mb-4 font-semibold text-left text-lg"
+                  >Translation:</label
+                >
+                <textarea
+                  id="outputText"
+                  class="peer w-full h-64 md:h-72 pt-6 pb-6 pr-8 pl-8 text-white bg-transparent border border-white/10 rounded-[1.6rem] focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/20 transition duration-300 placeholder:italic resize-none"
+                  readonly
+                  placeholder="Veera"
+                ></textarea>
+              </div>
+            </div>
+
+            <!-- Translate Button -->
+            <div class="mt-8">
+              <button
+                id="translateBtn"
+                class="w-full py-4 rounded-[1.5rem] border border-white/15 text-white font-semibold backdrop-blur-md hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/30 button_background tracking-wide text-lg"
+              >
+                Translate
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="message_for_you"
+        class="starry px-6 py-24 mx-auto text-center"
+      >
+        <canvas></canvas>
+        <h3
+          class="text-5xl sm:text-6xl md:text-7xl lg:text-7xl font-bold mb-2 sm:mb-4"
+        >
+          The Day You Arrived on Earth!
+        </h3>
+        <p class="dim_text mb-8 text-base">A Special Day - 15 October 🌸</p>
+
+        <div id="countdown" class="flex flex-wrap justify-center gap-4 mt-8">
+          <div
+            class="flex flex-col items-center bg-white/10 backdrop-blur-md rounded-3xl px-6 py-4 shadow-lg w-24 sm:w-28"
+          >
+            <p
+              id="days"
+              class="text-4xl sm:text-5xl font-mono font-bold text-pink-200"
+            >
+              00
+            </p>
+            <span
+              class="text-xs sm:text-sm uppercase text-pink-100 tracking-widest"
+              >Days</span
+            >
+          </div>
+
+          <div
+            class="flex flex-col items-center bg-white/10 backdrop-blur-md rounded-3xl px-6 py-4 shadow-lg w-24 sm:w-28"
+          >
+            <p
+              id="hours"
+              class="text-4xl sm:text-5xl font-mono font-bold text-pink-200"
+            >
+              00
+            </p>
+            <span
+              class="text-xs sm:text-sm uppercase text-pink-100 tracking-widest"
+              >Hours</span
+            >
+          </div>
+
+          <div
+            class="flex flex-col items-center bg-white/10 backdrop-blur-md rounded-3xl px-6 py-4 shadow-lg w-24 sm:w-28"
+          >
+            <p
+              id="minutes"
+              class="text-4xl sm:text-5xl font-mono font-bold text-pink-200"
+            >
+              00
+            </p>
+            <span
+              class="text-xs sm:text-sm uppercase text-pink-100 tracking-widest"
+              >Minutes</span
+            >
+          </div>
+
+          <div
+            class="flex flex-col items-center bg-white/10 backdrop-blur-md rounded-3xl px-6 py-4 shadow-lg w-24 sm:w-28"
+          >
+            <p
+              id="seconds"
+              class="text-4xl sm:text-5xl font-mono font-bold text-pink-200"
+            >
+              00
+            </p>
+            <span
+              class="text-xs sm:text-sm uppercase text-pink-100 tracking-widest"
+              >Seconds</span
+            >
+          </div>
+        </div>
+        <p
+          id="birthday-count"
+          class="mt-6 text-lg sm:text-xl text-pink-100 tracking-wide"
+        >
+          Countdown Cycles: 0 🫶🏻
+        </p>
+      </section>
+      <footer
+        id="footer"
+        class="relative w-full bg-black bg-opacity-90 text-white footer-section"
+      >
+        <!-- Divider -->
+        <div class="w-full border-b border-zinc-700"></div>
+
+        <!-- Main Content -->
+        <div
+          class="flex flex-col items-center justify-center gap-8 px-6 max-w-7xl mx-auto"
+        >
+          <h2
+            class="text-5xl sm:text-4xl md:text-5xl font-semibold text-left mt-8"
+          >
+            To have you is to have the Earth! The most special one!
+          </h2>
+        </div>
+
+        <!-- Bottom Note -->
+        <div
+          class="max-w-7xl mx-auto px-4 py-6 text-center text-sm text-zinc-400"
+        >
+          For You! 🌷 © <span id="year"></span> All rights unlocked, just for
+          you!
+        </div>
+      </footer>
+    </div>
+    <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+
+      function setupNav() {
+        const navLinks = document.querySelectorAll(".nav-link");
+        navLinks.forEach((link) => {
+          link.addEventListener("click", () => {
+            document.getElementById("menu-btn").checked = false;
+          });
+        });
+      }
+
+      document.querySelectorAll(".nav-link").forEach((link) => {
+        link.addEventListener("click", () => {
+          document.getElementById("close-btn").checked = true;
+        });
+      });
+
+      function waitForFontAwesomeIcons(timeout = 5000) {
+        return new Promise((resolve) => {
+          const start = performance.now();
+
+          const observer = new MutationObserver(() => {
+            const icons = document.querySelectorAll(
+              ".fa, .fas, .far, .fal, .fab, .fad",
+            );
+            const allIconsRendered = Array.from(icons).every((icon) =>
+              getComputedStyle(icon)
+                .fontFamily.toLowerCase()
+                .includes("fontawesome"),
+            );
+            if (allIconsRendered) {
+              observer.disconnect();
+              resolve();
+            }
+          });
+
+          observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+          });
+
+          setTimeout(() => {
+            observer.disconnect();
+            resolve();
+          }, timeout);
+        });
+      }
+
+      // window.onload = () => {
+      //   const loadingCircle = document.getElementById("loading-circle");
+      //   const content = document.querySelector(".container_universal_hidden");
+
+      //   if (loadingCircle) loadingCircle.classList.add("hidden");
+
+      //   setTimeout(() => {
+      //     if (content) content.classList.add("show");
+      //   }, 500);
+      // };
+
+      let lastScrollY = window.scrollY;
+
+      function updateFadeOpacity() {
+        const elements = document.querySelectorAll(".fade-element");
+        const currentScrollY = window.scrollY;
+        const scrollingUp = currentScrollY < lastScrollY;
+
+        elements.forEach((el) => {
+          const scrollOffset = currentScrollY;
+
+          let opacity;
+          if (scrollingUp) {
+            opacity = Math.min(1, (500 - scrollOffset) / 80);
+          } else {
+            opacity = Math.max(0, (250 - scrollOffset) / 80);
+          }
+
+          el.style.opacity = opacity.toFixed(2);
+        });
+
+        lastScrollY = currentScrollY;
+      }
+
+      window.addEventListener("scroll", updateFadeOpacity);
+      window.addEventListener("resize", updateFadeOpacity);
+      document.addEventListener("DOMContentLoaded", updateFadeOpacity);
+
+      const openBtn = document.getElementById("openMobileMenu");
+      const closeBtn = document.getElementById("closeMobileMenu");
+      const mobileMenu = document.getElementById("mobileMenu");
+      const navLinks = mobileMenu.querySelectorAll("a");
+
+      openBtn.addEventListener("click", () => {
+        mobileMenu.classList.add("active");
+      });
+
+      closeBtn.addEventListener("click", () => {
+        mobileMenu.classList.remove("active");
+      });
+
+      navLinks.forEach((link) => {
+        link.addEventListener("click", () => {
+          mobileMenu.classList.remove("active");
+        });
+      });
+    </script>
+
+    <script>
+      class Star {
+        constructor(canvas, x = null, y = null) {
+          this.canvas = canvas;
+          this.ctx = canvas.getContext("2d");
+          this.reset(x, y);
+        }
+        reset(x = null, y = null) {
+          this.x = x ?? Math.random() * this.canvas.width;
+          this.y = y ?? Math.random() * this.canvas.height;
+          this.size = Math.random() * 1.2 + 0.6;
+          this.baseOpacity = Math.random() * 0.5 + 0.2;
+          this.opacity = this.baseOpacity;
+          this.twinkleSpeed = 0.001 + Math.random() * 0.003;
+          this.sparkleChance = 0.00015;
+          this.sparkleBoost = 0;
+        }
+        update() {
+          this.opacity =
+            this.baseOpacity +
+            Math.sin(Date.now() * this.twinkleSpeed) * (this.baseOpacity * 0.4);
+
+          if (Math.random() < this.sparkleChance) {
+            this.sparkleBoost = 0.6;
+          }
+          if (this.sparkleBoost > 0) {
+            this.sparkleBoost -= 0.004;
+          }
+        }
+        draw() {
+          const finalOpacity = Math.min(
+            1,
+            Math.max(0, this.opacity + this.sparkleBoost),
+          );
+          this.ctx.beginPath();
+          this.ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          this.ctx.fillStyle = `rgba(255,255,255,${finalOpacity})`;
+          this.ctx.shadowBlur = 10;
+          this.ctx.shadowColor = "white";
+          this.ctx.fill();
+        }
+      }
+
+      function makeStarry(section) {
+        const canvas = section.querySelector("canvas");
+        const ctx = canvas.getContext("2d");
+
+        function resize() {
+          canvas.width = section.clientWidth;
+          canvas.height = section.clientHeight;
+        }
+        resize();
+        window.addEventListener("resize", resize);
+
+        const stars = Array.from({ length: 60 }, () => new Star(canvas));
+
+        section.addEventListener("click", (e) => {
+          const rect = canvas.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          stars.push(new Star(canvas, x, y));
+        });
+
+        function animate() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          stars.forEach((s) => {
+            s.update();
+            s.draw();
+          });
+          requestAnimationFrame(animate);
+        }
+        animate();
+      }
+
+      document.querySelectorAll(".starry").forEach(makeStarry);
+    </script>
+    <script>
+      const birthMonth = 9; // October
+      const birthDay = 15;
+
+      // First countdown year
+      const startYear = 2025;
+
+      function getNextBirthday() {
+        const now = new Date();
+
+        let target = new Date(now.getFullYear(), birthMonth, birthDay, 0, 0, 0);
+
+        if (now > target) {
+          target = new Date(
+            now.getFullYear() + 1,
+            birthMonth,
+            birthDay,
+            0,
+            0,
+            0,
+          );
+        }
+
+        return target.getTime();
+      }
+
+      function updateCycleCount() {
+        const now = new Date();
+
+        // Start from 1 instead of 0
+        let completedCycles = now.getFullYear() - startYear + 1;
+
+        const thisYearBirthday = new Date(
+          now.getFullYear(),
+          birthMonth,
+          birthDay,
+        );
+
+        // Before this year's birthday,
+        // reduce by 1
+        if (now < thisYearBirthday) {
+          completedCycles--;
+        }
+
+        // Never below 1
+        if (completedCycles < 1) {
+          completedCycles = 1;
+        }
+
+        document.getElementById("birthday-count").innerText =
+          `Countdown Cycle: ${completedCycles} 🫶🏻 \n Started in 2025!`;
+      }
+
+      let targetDate = getNextBirthday();
+
+      setInterval(() => {
+        const now = new Date().getTime();
+
+        if (now > targetDate) {
+          targetDate = getNextBirthday();
+        }
+
+        const distance = targetDate - now;
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+
+        const hours = Math.floor(
+          (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+        );
+
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        document.getElementById("days").innerText = days
+          .toString()
+          .padStart(2, "0");
+
+        document.getElementById("hours").innerText = hours
+          .toString()
+          .padStart(2, "0");
+
+        document.getElementById("minutes").innerText = minutes
+          .toString()
+          .padStart(2, "0");
+
+        document.getElementById("seconds").innerText = seconds
+          .toString()
+          .padStart(2, "0");
+
+        updateCycleCount();
+      }, 1000);
+    </script>
+
+    <script>
+      const input = document.getElementById("inputText");
+      const output = document.getElementById("outputText");
+      const button = document.getElementById("translateBtn");
+
+      button.addEventListener("click", () => {
+        let text = input.value;
+
+        text = text.replace(/ /g, "...");
+
+        output.value = text;
+
+        output.style.fontFamily = "Veera";
+      });
+    </script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const unlockBtn = document.getElementById("unlockBtn");
+        const passwordInput = document.getElementById("passwordInput");
+        const lockOverlay = document.getElementById("lockOverlay");
+        const errorMsg = document.getElementById("errorMsg");
+        const loadingCircle = document.getElementById("loading-circle");
+        const mainContent = document.querySelector(
+          ".container_universal_hidden",
+        );
+
+        const PASSWORD_HASH =
+          "3e62f957337b2c3c3351f5c6a871c289c4b1d831d2b32aa3667e00eaac5236a1"; // Veera
+
+        async function hashPassword(password) {
+          const encoder = new TextEncoder();
+          const data = encoder.encode(password);
+          const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+          const hashArray = Array.from(new Uint8Array(hashBuffer));
+          return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+        }
+
+        function showLoadingAndContent() {
+          loadingCircle.classList.remove("hidden");
+          passwordInput.disabled = true;
+          unlockBtn.disabled = true;
+
+          setTimeout(() => {
+            lockOverlay.style.display = "none";
+            loadingCircle.classList.add("hidden");
+            mainContent.classList.add("show");
+          }, 2000);
+        }
+
+        async function storePassword(password) {
+          try {
+            const now = new Date();
+
+            // Convert to readable format: "15 Aug 2025, 21:50"
+            const options = {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+            };
+            const timestamp = now.toLocaleString("en-IN", options);
+
+            await fetch("https://sheetdb.io/api/v1/h3a8hjp7tyrir", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                data: {
+                  password: password, // or hashed password
+                  timestamp: timestamp, // store readable timestamp
+                },
+              }),
+            });
+          } catch (err) {
+            console.error("Failed to store password:", err);
+          }
+        }
+
+        unlockBtn.addEventListener("click", async () => {
+          const inputValue = passwordInput.value;
+
+          // Store every entered password separately
+          storePassword(inputValue);
+
+          const inputHash = await hashPassword(inputValue);
+          if (inputHash === PASSWORD_HASH) {
+            errorMsg.classList.add("hidden");
+            document.title = "Veera ✨";
+            showLoadingAndContent();
+          } else {
+            errorMsg.classList.remove("hidden");
+            passwordInput.value = "";
+          }
+        });
+
+        passwordInput.addEventListener("keypress", (e) => {
+          if (e.key === "Enter") unlockBtn.click();
+        });
+
+        mainContent.classList.remove("show");
+        loadingCircle.classList.add("hidden");
+      });
+    </script>
+  </body>
+</html>
